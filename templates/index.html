@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Evaluation Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #0f3460;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0f3460, #1a1a2e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(15, 52, 96, 0.3);
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .result.success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+        }
+        
+        .result.error {
+            background: #ff7675;
+            color: white;
+        }
+        
+        .result h2 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .result .prediction {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Car Evaluation Predictor</h1>
+        <p class="subtitle">NLP-based SVM Model | SP23-BAI-031</p>
+        
+        <form method="POST" action="/predict">
+            <div class="form-group">
+                <label>Buying Price</label>
+                <select name="buying" required>
+                    {% for opt in options.buying %}
+                    <option value="{{ opt }}" {% if form_data and form_data.buying == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Maintenance Cost</label>
+                <select name="maint" required>
+                    {% for opt in options.maint %}
+                    <option value="{{ opt }}" {% if form_data and form_data.maint == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Number of Doors</label>
+                <select name="doors" required>
+                    {% for opt in options.doors %}
+                    <option value="{{ opt }}" {% if form_data and form_data.doors == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Passenger Capacity</label>
+                <select name="persons" required>
+                    {% for opt in options.persons %}
+                    <option value="{{ opt }}" {% if form_data and form_data.persons == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Luggage Boot Size</label>
+                <select name="lug_boot" required>
+                    {% for opt in options.lug_boot %}
+                    <option value="{{ opt }}" {% if form_data and form_data.lug_boot == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Safety Rating</label>
+                <select name="safety" required>
+                    {% for opt in options.safety %}
+                    <option value="{{ opt }}" {% if form_data and form_data.safety == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit">Evaluate Car</button>
+        </form>
+        
+        {% if prediction %}
+        <div class="result success">
+            <h2>Prediction Result</h2>
+            <div class="prediction">{{ prediction }}</div>
+        </div>
+        {% endif %}
+        
+        {% if error %}
+        <div class="result error">
+            <h2>Error</h2>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="badge">Accuracy: 92.20%</div>
+    </div>
+</body>
+</html>
+

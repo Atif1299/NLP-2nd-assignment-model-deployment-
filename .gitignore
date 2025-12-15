@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# PDFs (not needed for deployment)
+*.pdf
+
+# Other model files (keep only the one we need)
+car_svc_model.pkl
+svc_trained_model.pkl
+car_nlp_pipeline ( sp23-bai-031 ) .pkl
+i.py
+
